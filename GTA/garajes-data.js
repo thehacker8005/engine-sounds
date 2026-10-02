@@ -1277,7 +1277,7 @@ window.GARAGES = [
   "id": "coches-sede",
   "name": "Sede Moteros Centro Vinewood",
   "type": "Motos III",
-  "cover": "https://www.gamereactor.es/media/41/newscreenshotsgta_1874193b.png",
+  "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTex3TGXj6mAjU0ZkpDziskLkOntWR_9axg0BG2Dx47c44dfRNp3hvW7v4&s=10",
   "cars": [
    [
     "LCC Sanctus",
