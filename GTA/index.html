@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Patrimonio, estadísticas, garaje y arsenal de TheHacker8005 en GTA Online.">
+<meta name="theme-color" content="#0b0f17">
+<title>TheHacker8005 · GTA Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<style>
+:root{
+  --bg:#0b0f17; --surface:#121826; --surface-2:#1a2233; --line:#263148;
+  --text:#e8edf6; --muted:#8c98b0; --accent:#3d8bff; --gold:#f5c451; --green:#34d399;
+  --radius:14px; --maxw:1180px;
+  --font-display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1rem/1.6 var(--font-body);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{width:min(100% - 2rem,var(--maxw));margin-inline:auto}
+section{padding:4.5rem 0}
+h1,h2,h3{font-family:var(--font-display);line-height:1.05;margin:0;letter-spacing:.01em}
+h2{font-size:clamp(2rem,4vw,2.75rem);margin-bottom:.5rem}
+.lead{color:var(--muted);max-width:60ch;margin:0 0 2rem}
+
+/* Navegación */
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,15,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font:700 1.4rem var(--font-display);text-decoration:none}
+.nav ul{display:flex;gap:1.5rem;list-style:none;margin:0;padding:0}
+.nav a.link{color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:500;transition:color .2s}
+.nav a.link:hover{color:var(--text)}
+
+/* Hero */
+.hero{padding:5rem 0 3rem;border-bottom:1px solid var(--line);background:radial-gradient(900px 300px at 20% -10%,rgba(61,139,255,.18),transparent)}
+.hero h1{font-size:clamp(3rem,8vw,5.5rem)}
+.hero p{color:var(--muted);margin:.75rem 0 2.5rem;max-width:52ch}
+.balances{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.balance{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.6rem}
+.balance small{color:var(--muted);font-size:.85rem}
+.balance strong{display:block;font:700 clamp(1.8rem,3.4vw,2.6rem) var(--font-display);margin-top:.25rem;font-variant-numeric:tabular-nums}
+.balance.total{border-color:rgba(245,196,81,.5)}
+.balance.total strong{color:var(--gold)}
+.balance.bank strong{color:var(--green)}
+.balance.cash strong{color:var(--accent)}
+
+/* Ingresos */
+.income{display:grid;grid-template-columns:1fr 340px 1fr;gap:2rem;align-items:center}
+.income-list{display:grid;gap:.75rem}
+.row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:default}
+.row i{width:10px;height:10px;border-radius:50%;flex:none}
+.row span{flex:1;color:var(--muted);font-size:.92rem}
+.row b{font-variant-numeric:tabular-nums}
+.row:hover,.row.active{border-color:var(--accent)}
+.donut{position:relative;aspect-ratio:1}
+.donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+.donut-center b{font:700 2.8rem var(--font-display)}
+.donut-center span{color:var(--muted);font-size:.9rem}
+.summary{display:grid;grid-template-columns:1fr 1fr;margin-top:2rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.summary div{padding:1.4rem;text-align:center}
+.summary div+div{border-left:1px solid var(--line)}
+.summary small{color:var(--muted)}
+.summary strong{display:block;font:700 2rem var(--font-display)}
+
+/* Perfil */
+.profile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2rem}
+.level{display:flex;gap:1.5rem;align-items:center;margin-bottom:1.75rem}
+.level-num{background:var(--surface-2);border-radius:12px;padding:.6rem 1.4rem;text-align:center}
+.level-num b{display:block;font:700 2.2rem var(--font-display)}
+.level-num small{color:var(--muted)}
+.rp{flex:1}
+.bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);border-radius:99px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.75rem}
+.stat{background:var(--surface-2);border-radius:10px;padding:1rem}
+.stat b{display:block;font:700 1.5rem var(--font-display)}
+.stat small{color:var(--muted)}
+.fav{display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:center;background:var(--surface-2);border-radius:12px;padding:1.5rem}
+.fav h3{font-size:1.6rem}
+.meter{display:grid;grid-template-columns:80px 1fr;gap:.6rem;align-items:center;font-size:.85rem;color:var(--muted);margin:.4rem 0}
+.meter .bar{height:6px}
+.meter .bar>div{background:var(--green)}
+.fav-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1.25rem}
+.fav-stats b{display:block;font-size:1.05rem}
+.fav-stats small{color:var(--muted)}
+
+/* Controles */
+.toolbar{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-bottom:1.5rem}
+.search{flex:1;min-width:220px;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--text);font:inherit}
+.search::placeholder{color:var(--muted)}
+.count{color:var(--muted);font-size:.9rem}
+
+/* Garajes */
+.garage{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);margin-bottom:1rem;overflow:hidden}
+.garage-head{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:1.25rem;width:100%;padding:.9rem;cursor:pointer}
+.garage-head:hover{background:var(--surface-2)}
+.garage-head img{width:150px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;flex:none}
+.garage-head h3{font-size:1.5rem}
+.garage-head small{color:var(--muted)}
+.garage-head .chev{margin-left:auto;font-size:1.4rem;color:var(--muted);transition:transform .25s}
+.garage-head[aria-expanded=true] .chev{transform:rotate(180deg)}
+.garage-body{display:none;padding:1rem;border-top:1px solid var(--line);grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem}
+.garage-body.open{display:grid}
+
+/* Tarjetas con giro */
+.car{perspective:900px;aspect-ratio:4/3;border:0;background:none;padding:0;cursor:pointer;color:inherit;font:inherit;text-align:left}
+.car-inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.car[aria-pressed=true] .car-inner{transform:rotateY(180deg)}
+@media (hover:hover){
+  .car:hover .car-inner,.car:focus-visible .car-inner{transform:rotateY(180deg)}
+}
+.face{position:absolute;inset:0;border-radius:10px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface-2)}
+.face img{width:100%;height:100%;object-fit:cover}
+.face span{position:absolute;left:0;right:0;bottom:0;padding:.6rem .75rem;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:.85rem;font-weight:600}
+.face.back{transform:rotateY(180deg);outline:2px solid var(--accent);outline-offset:-2px}
+.face.back em{position:absolute;top:.5rem;left:.5rem;background:var(--accent);color:#fff;font-size:.7rem;font-style:normal;font-weight:600;padding:.15rem .5rem;border-radius:99px}
+.empty{display:none;padding:2rem;text-align:center;color:var(--muted)}
+
+/* Armas */
+.weapons{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.75rem}
+.weapon{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem;text-align:center;transition:border-color .2s}
+.weapon:hover{border-color:var(--accent)}
+.weapon img{width:100%;max-width:150px;height:60px;object-fit:contain;margin:0 auto .6rem}
+.weapon span{font-size:.85rem;color:var(--muted)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{padding:.45rem .9rem;border-radius:99px;border:1px solid var(--line);background:none;color:var(--muted);font:500 .85rem var(--font-body);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+footer{border-top:1px solid var(--line);padding:2rem 0;text-align:center;color:var(--muted);font-size:.9rem}
+
+@media(max-width:900px){
+  .income{grid-template-columns:1fr}.donut{max-width:300px;margin:auto}
+  .balances{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}
+  .fav{grid-template-columns:1fr}.nav ul{gap:1rem}
+}
+@media(max-width:560px){
+  section{padding:3rem 0}
+  .garage-head img{width:96px}.fav-stats{grid-template-columns:repeat(2,1fr)}
+  .level{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="brand" href="#top">TheHacker8005</a>
+    <ul>
+      <li><a class="link" href="#patrimonio">Patrimonio</a></li>
+      <li><a class="link" href="#perfil">Perfil</a></li>
+      <li><a class="link" href="#vehiculos">Vehículos</a></li>
+      <li><a class="link" href="#armas">Armas</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1>Mi patrimonio</h1>
+    <p>Dinero, estadísticas, garajes y arsenal de mi cuenta de GTA Online.</p>
+    <div class="balances" id="balances"></div>
+  </div>
+</header>
+
+<main>
+  <section id="patrimonio">
+    <div class="wrap">
+      <h2>Ingresos por categoría</h2>
+      <p class="lead">Pasa el cursor o toca una categoría para ver su peso sobre el total ganado.</p>
+      <div class="income">
+        <div class="income-list" id="incomeLeft"></div>
+        <div class="donut">
+          <canvas id="incomeChart" role="img" aria-label="Gráfico de ingresos por categoría"></canvas>
+          <div class="donut-center"><b id="pct">–</b><span id="cat">Categoría</span></div>
+        </div>
+        <div class="income-list" id="incomeRight"></div>
+      </div>
+      <div class="summary">
+        <div><small>Total ganado</small><strong id="earned"></strong></div>
+        <div><small>Total gastado</small><strong id="spent"></strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="perfil" style="padding-top:0">
+    <div class="wrap">
+      <h2>Perfil</h2>
+      <p class="lead">Nivel, estadísticas de juego y arma favorita.</p>
+      <div class="profile">
+        <div class="level">
+          <div class="level-num"><b>316</b><small>Nivel</small></div>
+          <div class="rp">
+            <b>8,9 M RP</b>
+            <div class="bar" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><div style="width:98.9%"></div></div>
+            <small style="color:var(--muted)">8,9 M / 9 M</small>
+          </div>
+        </div>
+        <div class="stats" id="stats"></div>
+        <div class="fav">
+          <div>
+            <img src="https://s.rsg.sc/sc/images/games/GTAV/weapons/314x120_colour/W_AR_CarbineRifle.png" alt="Rifle Carabina" loading="lazy">
+            <small style="color:var(--muted)">Arma favorita</small>
+            <h3>Carbine Rifle</h3>
+          </div>
+          <div>
+            <div id="meters"></div>
+            <div class="fav-stats">
+              <div><b>7.611</b><small>Bajas</small></div>
+              <div><b>6.195</b><small>Tiros a la cabeza</small></div>
+              <div><b>23,89 %</b><small>Precisión</small></div>
+              <div><b>375:19:38</b><small>Tiempo usada</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vehiculos" style="padding-top:0">
+    <div class="wrap">
+      <h2>Vehículos</h2>
+      <p class="lead">Abre un garaje y toca un vehículo para ver su equivalente en la vida real.</p>
+      <div class="toolbar">
+        <input class="search" id="carSearch" type="search" placeholder="Buscar vehículo (p. ej. Grotti, Ferrari…)" aria-label="Buscar vehículo">
+        <button class="chip" id="toggleAll" type="button">Abrir todos</button>
+        <span class="count" id="carCount"></span>
+      </div>
+      <div id="garages"></div>
+      <p class="empty" id="carEmpty">Ningún vehículo coincide con la búsqueda.</p>
+    </div>
+  </section>
+
+  <section id="armas" style="padding-top:0">
+    <div class="wrap">
+      <h2>Armas</h2>
+      <p class="lead">Arsenal completo, filtrable por tipo.</p>
+      <div class="toolbar">
+        <div class="chips" id="weaponChips" role="group" aria-label="Filtrar por tipo"></div>
+        <input class="search" id="weaponSearch" type="search" placeholder="Buscar arma" aria-label="Buscar arma">
+      </div>
+      <div class="weapons" id="weapons"></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© 2026 TheHacker8005 · GTA Online</div></footer>
+
+<script src="garajes-data.js"></script>
+<script>
+"use strict";
+/* =====================================================
+   DATOS  (edita aquí; el HTML se genera solo)
+   ===================================================== */
+const money = { cash: 7014497, bank: 261192901, earned: 1200000000, spent: 1000000000 };
+
+const income = [
+  { name: "Trabajos",           value: 208400000, color: "#ff9933", side: "L" },
+  { name: "Compartido",         value: 60000,     color: "#4fc3f7", side: "L" },
+  { name: "Otros",              value: 662000,    color: "#81c784", side: "L" },
+  { name: "Apuestas",           value: 746300000, color: "#ffd54f", side: "R" },
+  { name: "Venta de vehículos", value: 65400,     color: "#ff5252", side: "R" },
+  { name: "Recogido",           value: 103400,    color: "#ff00ff", side: "R" }
+];
+
+const stats = [
+  ["11 K","Policías eliminados"],["87,8 K","Estrellas conseguidas"],["5d 18h 17m","Tiempo en búsqueda"],
+  ["11,3 K","Vehículos robados"],["10 K","Coches exportados"],["1.003","Tiendas atracadas"]
+];
+const meters = [["Daño",65],["Cadencia",65],["Precisión",55],["Alcance",45],["Cargador",40]];
+
+/* Imagen del juego: se deduce del nombre → imagenes-garaje/<Nombre>.jpg */
+const IMG = "https://raw.githubusercontent.com/thehacker8005/imagenes-garaje/main/";
+
+/* Formato de vehículo: [nombreGTA, equivalenteReal, urlImagenReal, (imagenGTA opcional)] */
+const SAMPLE_GARAGES = [
+  { id:"richman", name:"Villa Richman", type:"Deportivos clásicos",
+    cover:"https://media-rockstargames-com.akamaized.net/tina-uploads/posts/ak392a52o59o13/7ee92cdee4d286ce7c7f8f0a02dd54d4c8f7c3a5.jpg",
+    cars:[
+      ["Truffade Z-Type","Bugatti Type 57","https://th.bing.com/th/id/R.fd97f5bf42e98414054517f81608f8e3?rik=BSrK%2frv3yHUN2Q&riu=http%3a%2f%2fwww.supercars.net%2fblog%2fwp-content%2fuploads%2f2016%2f03%2f1066334-1024.jpg&ehk=HOGn3qEd4C2oNvG1HhbujGP7dlRMqk1pprwa%2fQxImQY%3d&risl=&pid=ImgRaw&r=0","Truffade Z Type"],
+      ["Grotti Stinger","1963 Ferrari 250 GT California Spyder","https://uncrate.com/p/2024/01/250-gt-swb-spyder-1.jpg"],
+      ["Pegassi Monroe","Lamborghini Miura","https://wallpapercave.com/wp/wp3134542.jpg"],
+      ["Karin 190z","Datsun 240Z","https://cdn.wallpapersafari.com/70/89/PkFI6q.jpg","Karin 190z"]
+    ]},
+  { name:"Residencia de Vinewood", id:"vinewood", type:"Superdeportivos",
+    cover:"https://media-rockstargames-com.akamaized.net/tina-uploads/posts/ak392a52o59o13/1de90832eb5b5ad527b3b598d10bf900e90a9c5d.jpg",
+    cars:[
+      ["Obey 10F","Audi R8","https://www.autocar.co.uk/sites/autocar.co.uk/files/images/car-reviews/first-drives/legacy/a155540_largeredux2.jpg"],
+      ["Pegassi Torero XO","2022 Lamborghini Countach LPI 800-4","https://www.hdcarwallpapers.com/download/2022_lamborghini_countach_lpi_800_4_5k_11-2560x1440.jpg"],
+      ["Overflod Entity MT","Koenigsegg Jesko Absolut","https://wallpapercave.com/wp/wp6852381.jpg"],
+      ["Progen Emerus","McLaren Senna","https://wallpaperaccess.com/full/1152894.jpg"]
+    ]},
+  { name:"Hangar de la Base Militar", id:"hangar", type:"Aeronaves",
+    cover:"https://media.altchar.com/prod/images/original/gm-59147345-9da2-47ac-a63e-5138807ee4a1-nogcmhp.png",
+    cars:[
+      ["Buckingham Nimbus","Cessna Citation Longitude","https://tadistributors.com/wp-content/uploads/2021/07/396346-TA_Longitude_Farnbro_041-ee847b-original-1626126754.jpg"],
+      ["B-11 Strikeforce","Fairchild Republic A-10 Thunderbolt II","https://warwingsdaily.com/wp-content/uploads/2024/04/fairchild-repunlic-A-10-Warthog-2-1024x674.jpg"],
+      ["Mammoth Avenger","V-22 Osprey","https://winair.ca/wp-content/uploads/2019/01/Bell-Boeing-V-22-Osprey-Aircraft.jpg"]
+    ]}
+  /* Ejemplo mínimo: la lista completa se carga desde garajes-data.js */
+];
+const garages = window.GARAGES || SAMPLE_GARAGES;
+
+const W = "https://s.rsg.sc/sc/images/games/GTAV/weapons/314x120_colour/";
+const weapons = [
+  ["Pistola","Pistolas",W+"W_PI_Pistol.png"],["Pistola de combate","Pistolas",W+"W_PI_CombatPistol.png"],
+  ["Pistola AP","Pistolas",W+"W_PI_APPistol.png"],["Escopeta de corredera","Escopetas",W+"W_SG_PumpShotgun.png"],
+  ["Escopeta de asalto","Escopetas",W+"W_SG_AssaultShotgun.png"],["Micro subfusil","Subfusiles",W+"W_SB_MicroSMG.png"],
+  ["SMG de asalto","Subfusiles",W+"W_SB_AssaultSMG.png"],["Rifle de asalto","Rifles",W+"W_AR_AssaultRifle.png"],
+  ["Rifle carabina","Rifles",W+"W_AR_CarbineRifle.png"],["Sniper","Francotiradores",W+"W_SR_SniperRifle.png"],
+  ["RPG","Explosivos",W+"W_LR_RPG.png"],["Granada de mano","Explosivos",W+"W_Ex_GrenadeFrag.png"],
+  ["Cuchillo","Cuerpo a cuerpo",W+"W_ME_Knife.png"],["Bate de béisbol","Cuerpo a cuerpo",W+"W_ME_Bat.png"]
+];
+
+/* =====================================================
+   UTILIDADES
+   ===================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const fmt = n => "$" + n.toLocaleString("es-ES");
+const el = (tag, props = {}, html = "") => Object.assign(document.createElement(tag), props, html ? { innerHTML: html } : {});
+const esc = s => s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/* Balances con animación de conteo */
+function renderBalances() {
+  const items = [["cash","Dinero en efectivo",money.cash],["bank","Dinero en el banco",money.bank],["total","Total",money.cash + money.bank]];
+  $("#balances").innerHTML = items.map(([c,l,v]) =>
+    `<div class="balance ${c}"><small>${l}</small><strong data-v="${v}">${fmt(0)}</strong></div>`).join("");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll(".balance strong").forEach(n => {
+    const target = +n.dataset.v;
+    if (reduce) return void (n.textContent = fmt(target));
+    const t0 = performance.now(), dur = 1400;
+    (function tick(t) {
+      const p = Math.min((t - t0) / dur, 1);
+      n.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 4))));
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}
+
+/* Ingresos + gráfico */
+function renderIncome() {
+  const total = income.reduce((a, i) => a + i.value, 0);
+  const row = (i, idx) => `<div class="row" data-i="${idx}" tabindex="0"><i style="background:${i.color}"></i><span>${i.name}</span><b>${fmt(i.value)}</b></div>`;
+  $("#incomeLeft").innerHTML  = income.map((i, k) => i.side === "L" ? row(i, k) : "").join("");
+  $("#incomeRight").innerHTML = income.map((i, k) => i.side === "R" ? row(i, k) : "").join("");
+  $("#earned").textContent = fmt(money.earned);
+  $("#spent").textContent  = fmt(money.spent);
+
+  const show = k => {
+    const i = income[k];
+    $("#pct").textContent = (i.value / total * 100).toFixed(2).replace(".", ",") + " %";
+    $("#pct").style.color = i.color;
+    $("#cat").textContent = i.name;
+    document.querySelectorAll(".row").forEach(r => r.classList.toggle("active", +r.dataset.i === k));
+  };
+  const top = income.reduce((m, i, k) => i.value > income[m].value ? k : m, 0);
+  show(top);
+  document.querySelectorAll(".row").forEach(r => {
+    ["mouseenter","focus","click"].forEach(ev => r.addEventListener(ev, () => show(+r.dataset.i)));
+  });
+
+  const draw = () => new Chart($("#incomeChart"), {
+    type: "doughnut",
+    data: { labels: income.map(i => i.name), datasets: [{ data: income.map(i => i.value), backgroundColor: income.map(i => i.color), borderWidth: 0 }] },
+    options: { cutout: "76%", animation: { duration: 1800, easing: "easeOutQuart" },
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      onHover: (e, a) => a.length && show(a[0].index) }
+  });
+  window.Chart ? draw() : window.addEventListener("load", draw);
+}
+
+/* Perfil */
+function renderProfile() {
+  $("#stats").innerHTML = stats.map(([v, l]) => `<div class="stat"><b>${v}</b><small>${l}</small></div>`).join("");
+  $("#meters").innerHTML = meters.map(([l, v]) =>
+    `<div class="meter"><span>${l}</span><div class="bar"><div style="width:${v}%"></div></div></div>`).join("");
+}
+
+/* Garajes y vehículos */
+function renderGarages() {
+  const box = $("#garages");
+  box.innerHTML = "";
+  garages.forEach(g => {
+    const sec = el("div", { className: "garage" });
+    sec.dataset.id = g.id;
+    const head = el("button", { className: "garage-head", type: "button" },
+      `<img src="${g.cover}" alt="" loading="lazy" decoding="async">
+       <div><h3>${esc(g.name)}</h3><small>${esc(g.type)} · <span class="n">${g.cars.length}</span> vehículos</small></div>
+       <span class="chev" aria-hidden="true">⌄</span>`);
+    head.setAttribute("aria-expanded", "false");
+    const body = el("div", { className: "garage-body" });
+    body.id = "body-" + g.id;
+    head.setAttribute("aria-controls", body.id);
+    body.innerHTML = g.cars.map(([name, real, realImg, frontImg]) => {
+      const front = /^https?:/.test(frontImg || "") ? frontImg : IMG + encodeURIComponent(frontImg || name) + ".jpg";
+      return `<button class="car" type="button" aria-pressed="false" data-s="${esc(norm(name + " " + real))}" aria-label="${esc(name)}. Pulsa para ver ${esc(real)}">
+        <div class="car-inner">
+          <div class="face"><img src="${front}" alt="${esc(name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span>${esc(name)}</span></div>
+          <div class="face back"><img src="${realImg}" alt="${esc(real)}" loading="lazy" decoding="async" referrerpolicy="no-referrer"><em>Real</em><span>${esc(real)}</span></div>
+        </div></button>`;
+    }).join("");
+    head.addEventListener("click", () => setOpen(sec, head.getAttribute("aria-expanded") !== "true"));
+    sec.append(head, body);
+    box.append(sec);
+  });
+  box.addEventListener("click", e => {
+    const car = e.target.closest(".car");
+    if (car && !matchMedia("(hover:hover)").matches)
+      car.setAttribute("aria-pressed", car.getAttribute("aria-pressed") !== "true");
+  });
+  updateCount();
+}
+function setOpen(sec, open) {
+  $(".garage-head", sec).setAttribute("aria-expanded", open);
+  $(".garage-body", sec).classList.toggle("open", open);
+}
+function updateCount() {
+  const visible = document.querySelectorAll(".car:not([hidden])").length;
+  $("#carCount").textContent = `${visible} vehículos`;
+  $("#carEmpty").style.display = visible ? "none" : "block";
+}
+$("#carSearch").addEventListener("input", e => {
+  const q = norm(e.target.value.trim());
+  document.querySelectorAll(".garage").forEach(g => {
+    let hits = 0;
+    g.querySelectorAll(".car").forEach(c => { const m = !q || c.dataset.s.includes(q); c.hidden = !m; hits += m; });
+    g.hidden = !hits;
+    $(".n", g).textContent = hits;
+    if (q) setOpen(g, hits > 0);
+  });
+  updateCount();
+});
+$("#toggleAll").addEventListener("click", e => {
+  const open = e.target.textContent === "Abrir todos";
+  document.querySelectorAll(".garage").forEach(g => setOpen(g, open));
+  e.target.textContent = open ? "Cerrar todos" : "Abrir todos";
+});
+
+/* Armas */
+function renderWeapons() {
+  const types = ["Todas", ...new Set(weapons.map(w => w[1]))];
+  let type = "Todas", q = "";
+  const chips = $("#weaponChips");
+  chips.innerHTML = types.map(t => `<button class="chip" type="button" aria-pressed="${t === type}">${t}</button>`).join("");
+  const draw = () => {
+    const list = weapons.filter(w => (type === "Todas" || w[1] === type) && norm(w[0]).includes(norm(q)));
+    $("#weapons").innerHTML = list.length
+      ? list.map(w => `<div class="weapon"><img src="${w[2]}" alt="" loading="lazy"><span>${w[0]}</span></div>`).join("")
+      : `<p class="empty" style="display:block;grid-column:1/-1">Ningún arma coincide.</p>`;
+  };
+  chips.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    type = b.textContent;
+    chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+    draw();
+  });
+  $("#weaponSearch").addEventListener("input", e => { q = e.target.value; draw(); });
+  draw();
+}
+
+renderBalances(); renderIncome(); renderProfile(); renderGarages(); renderWeapons();
+</script>
+</body>
+</html>
